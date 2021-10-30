@@ -1,12 +1,8 @@
 package com.example.bookappauthorization.Model;
 
-import com.example.bookappauthorization.Types.Implementation.NameImpl;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import org.hibernate.annotations.Columns;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.GenericGenerator;
-import org.hibernate.annotations.Type;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -119,5 +115,17 @@ public class User implements UserDetails{
     @Override
     public boolean isEnabled() {
         return true;
+    }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "id='" + id + '\'' +
+                ", email='" + email + '\'' +
+                ", username='" + username + '\'' +
+                ", password='" + password + '\'' +
+                ", createdAt=" + createdAt +
+                ", roles=" + roles +
+                '}';
     }
 }

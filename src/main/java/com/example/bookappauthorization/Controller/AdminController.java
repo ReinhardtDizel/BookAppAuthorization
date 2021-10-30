@@ -13,25 +13,4 @@ public class AdminController {
 
     @Autowired
     private UserServiceImpl userService;
-
-    @GetMapping()
-    public String userList(Model model) {
-        model.addAttribute("allUsers", userService.allUsers());
-        return "admin";
-    }
-    @PostMapping("/admin")
-    public String  deleteUser(@RequestParam(required = true, defaultValue = "" ) String userId,
-                              @RequestParam(required = true, defaultValue = "" ) String action,
-                              Model model) {
-        if (action.equals("delete")){
-            userService.delete(userId);
-        }
-        return "redirect:/admin";
-    }
-
-    @GetMapping("/admin/gt/{userId}")
-    public String  gtUser(@PathVariable("userId") String userId, Model model) {
-        model.addAttribute("findUserById", userService.findUserById(userId));
-        return "admin";
-    }
 }

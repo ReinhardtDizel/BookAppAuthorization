@@ -11,13 +11,9 @@ import java.sql.Timestamp;
 @Entity
 @Table(name = "user_address")
 public class Address {
+
     @Id
-    @GeneratedValue(generator = "UUID")
-    @GenericGenerator(
-            name = "UUID",
-            strategy = "org.hibernate.id.UUIDGenerator"
-    )
-    @Column(name = "id", updatable = false, nullable = false)
+    @Column(name = "user_id")
     private String id;
     /**<P>Address Column
      * <P><code>@Type(type = "com.example.bookappauthorization.Types.AddressTypeDescriptor")</code>
@@ -39,6 +35,11 @@ public class Address {
     })
     @Type(type = "com.example.bookappauthorization.Types.AddressTypeDescriptor")
     private AddressImpl address;
+
+    @OneToOne
+    @MapsId
+    @JoinColumn(name = "user_id")
+    private User user;
 
     @Column(name = "CREATED_AT", updatable = false)
     @CreationTimestamp

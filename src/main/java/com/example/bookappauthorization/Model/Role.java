@@ -1,42 +1,55 @@
 package com.example.bookappauthorization.Model;
 
-import org.hibernate.annotations.ColumnDefault;
+import org.springframework.security.core.GrantedAuthority;
 
+import javax.persistence.Entity;
+import javax.persistence.Table;
 import javax.persistence.*;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "user_role")
-public class Role {
+public class Role implements GrantedAuthority {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "id", nullable = false)
-    private int id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-    @Column(name = "role", nullable = false)
-    @ColumnDefault("user")
-    private String role;
+    private String name;
 
-    public int getId() {
+    @Transient
+    @ManyToMany(mappedBy = "roles")
+    private Set<User> users = new HashSet<>();
+
+    public Role(String name) {
+        this.name = name;
+    }
+
+    public Role() {
+    }
+
+    public Long getId() {
         return id;
     }
 
-    public String getRole() {
-        return role;
+    public Set<User> getUsers() {
+        return users;
     }
 
-    public void setRole(String role) throws Exception {
-        if(
-                role == "admin" ||
-                role == "user" ||
-                role == "moderator" ||
-                role == "owner"
-        ) {
-            this.role = role;
-        }
-        else if(role == "") {
-            this.role = "user";
-        }
-        else
-            throw new Exception("This role is not allowed " + role);
+    public void setUsers(Set<User> users) {
+        this.users = users;
+    }
+
+    @Override
+    public String getAuthority() {
+        return getName();
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+       this.name = name;
     }
 }

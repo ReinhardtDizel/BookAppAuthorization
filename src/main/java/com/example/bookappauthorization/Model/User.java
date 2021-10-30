@@ -1,20 +1,25 @@
 package com.example.bookappauthorization.Model;
 
 import com.example.bookappauthorization.Types.Implementation.NameImpl;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import org.hibernate.annotations.*;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.hibernate.annotations.Columns;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Type;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+
 import javax.persistence.*;
+import javax.validation.constraints.Size;
 import java.sql.Timestamp;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
 @Entity
 @Table(name = "user_data")
-public class User {
+public class User implements UserDetails{
     @Id
     @GeneratedValue(generator = "UUID")
     @GenericGenerator(
@@ -46,24 +51,34 @@ public class User {
     private NameImpl name;
 
     @Column(name = "user_email")
-    @Type(type="text")
     private String email;
 
-    @OneToMany(cascade= CascadeType.ALL, fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
-    @JsonIgnoreProperties("user")
-    private Set<Address> address = new HashSet<>();
-
-    @OneToOne(cascade= CascadeType.ALL, fetch = FetchType.LAZY)
-    private Security security;
-
-    @OneToMany(cascade= CascadeType.ALL, fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
-    private Set<Role> roles = new HashSet<>();
+    @OneToOne(mappedBy = "user", cascade= CascadeType.ALL, fetch = FetchType.LAZY)
+    @PrimaryKeyJoinColumn
+    private Address address;
 
     @Column(name = "CREATED_AT", updatable = false)
     @CreationTimestamp
     private Timestamp createdAt;
+
+    @Size(min=2, message = "Не меньше 5 знаков")
+    private String username;
+
+    @Size(min=2, message = "Не меньше 5 знаков")
+    @JsonIgnore
+    private String password;
+
+    @Transient
+    @JsonIgnore
+    private String passwordConfirm;
+
+    @ManyToMany(fetch = FetchType.EAGER)
+    private Set<Role> roles = new HashSet<>();
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return getRoles();
+    }
 
     public String getId() {
         return id;
@@ -77,14 +92,6 @@ public class User {
         this.name = name;
     }
 
-    public Timestamp getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(Timestamp createdAt) {
-        this.createdAt = createdAt;
-    }
-
     public String getEmail() {
         return email;
     }
@@ -93,20 +100,46 @@ public class User {
         this.email = email;
     }
 
-    public Set<Address> getAddress() {
+    public Address getAddress() {
         return address;
     }
 
-    public void setAddress(Set<Address> address) {
+    public void setAddress(Address address) {
         this.address = address;
     }
 
-    public Security getSecurity() {
-        return security;
+    public Timestamp getCreatedAt() {
+        return createdAt;
     }
 
-    public void setSecurity(Security security) {
-        this.security = security;
+    public void setCreatedAt(Timestamp createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    @Override
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    @Override
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public String getPasswordConfirm() {
+        return passwordConfirm;
+    }
+
+    public void setPasswordConfirm(String passwordConfirm) {
+        this.passwordConfirm = passwordConfirm;
     }
 
     public Set<Role> getRoles() {
@@ -118,15 +151,35 @@ public class User {
     }
 
     @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return true;
+    }
+
+    @Override
     public String toString() {
         return "User{" +
                 "id='" + id + '\'' +
                 ", name=" + name +
                 ", email='" + email + '\'' +
                 ", address=" + address +
-                ", security=" + security +
-                ", roles=" + roles +
                 ", createdAt=" + createdAt +
+                ", username='" + username + '\'' +
+                ", roles=" + roles +
                 '}';
     }
 }

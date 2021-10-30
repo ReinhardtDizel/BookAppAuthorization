@@ -15,13 +15,6 @@ public class RegistrationController {
     @Autowired
     private UserService userService;
 
-    @GetMapping()
-    public User registration(Model model) {
-        model.addAttribute("userForm", new User());
-        System.out.println(new User());
-        return new User();
-    }
-
     @PostMapping()
     public void addUser(User user) {
         System.out.println(user);
